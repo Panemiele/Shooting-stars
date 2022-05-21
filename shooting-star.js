@@ -8,11 +8,7 @@ var STAR_IMAGE = 'https://www.mariowiki.it/images/thumb/2/2f/Stella_NSMBU.png/12
 var imageSize = 40;
 
 var svgHeightScale = d3.scaleLinear();
-svgHeightScale.domain([0, 300])
-svgHeightScale.range([0, height - imageSize]);
 var svgWidthScale = d3.scaleLinear();
-svgWidthScale.domain([0, 300])
-svgWidthScale.range([0, width - imageSize]);
 
 function getRandomInt(max) {
     return Math.floor(Math.random() * max);
@@ -63,8 +59,34 @@ function firstDrawing(data){
     nextStarConfigNumber++;
 }
 
+function setWidthScaleDomainAndRange(data){
+    maxX1 = d3.max(data, function(d){return d.x1});
+    maxX2 = d3.max(data, function(d){return d.x2});
+    maxX3 = d3.max(data, function(d){return d.x3});
+
+    minX1 = d3.min(data, function(d){return d.x1});
+    minX2 = d3.min(data, function(d){return d.x2});
+    minX3 = d3.min(data, function(d){return d.x3});
+    svgWidthScale.domain([Math.min(minX1, minX2, minX3), Math.max(maxX1, maxX2, maxX3)])
+    svgWidthScale.range([0, width - imageSize]);
+}
+
+function setHeightScaleDomainAndRange(data){
+    maxY1 = d3.max(data, function(d){return d.y1});
+    maxY2 = d3.max(data, function(d){return d.y2});
+    maxY3 = d3.max(data, function(d){return d.y3});
+
+    minY1 = d3.min(data, function(d){return d.y1});
+    minY2 = d3.min(data, function(d){return d.y2});
+    minY3 = d3.min(data, function(d){return d.y3});
+    svgHeightScale.domain([Math.min(minY1, minY2, minY3), Math.max(maxY1, maxY2, maxY3)])
+    svgHeightScale.range([0, height - imageSize]);
+}
+
 d3.json('stars.json')
     .then(function(data) {
+        setWidthScaleDomainAndRange(data);
+        setHeightScaleDomainAndRange(data);
         svg.attr("width", width).attr("height", height);
         firstDrawing(data);
     }
